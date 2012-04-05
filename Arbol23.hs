@@ -1,4 +1,6 @@
 module Arbol23 where
+ 
+import Char
 
 data Arbol23 a b = Hoja a | Dos b (Arbol23 a b) (Arbol23 a b) | Tres b b (Arbol23 a b) (Arbol23 a b) (Arbol23 a b)
 
@@ -15,46 +17,62 @@ padTree i (Tres x y a1 a2 a3) = [(pad i) ++  (show x) ++ (' ':(show y))] ++ (con
 pad:: Int -> String
 pad i = replicate i ' '
 
-{- Funciones pedidas. -}
+-- Funciones pedidas. --
 
---foldA23::
+foldA23::(a->c)->(b->c->c->c)->(b->b->c->c->c->c)->Arbol23 a b->c
+foldA23 h d t (Hoja x) = h x
+foldA23 h d t (Dos x y z) = d x (foldA23 h d t y) (foldA23 h d t z)
+foldA23 h d t (Tres v w x y z) = t v w  (foldA23 h d t x) (foldA23 h d t y) (foldA23 h d t z)
 
 --Lista en preorden de los internos del Arbol.
---internos::Arbol23 a b->[b]
+internos::Arbol23 a b->[b]
+internos a23 = foldA23 (\_->[]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
 
 --Lista las hojas de izquierda a derecha.
---hojas::Arbol23 a b->[a]
+hojas::Arbol23 a b->[a]
+hojas a23 = foldA23 (\x->[x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
 
---esHoja::Arbol23 a b->Bool
+esHoja::Arbol23 a b->Bool
+esHoja a23 = foldA23 (\_->True) (\_ _ _ -> False) (\_ _ _ _ _-> False) a23
 
---mapA23::(a->c)->(b->d)->Arbol23 a b->Arbol23 c d
+mapA23::(a->c)->(b->d)->Arbol23 a b->Arbol23 c d
+mapA23 f g a23 = foldA23 (\x -> Hoja (f x)) (\x y z -> Dos (g x) y z) (\v w x y z->Tres (g v) (g w) x y z) a23
 
 --Ejemplo de uso de mapA23.
 --Incrementa en 1 el valor de las hojas.
-incrementarHojas::Num a =>Arbol23 a b->Arbol23 a b
-incrementarHojas = mapA23 (+1) id
-
+--incrementarHojas::Num a =>Arbol23 a b->Arbol23 a b
+--incrementarHojas = mapA23 (+1) id
 
 --Trunca el Arbol hasta un determinado nivel. Cuando llega a 0, reemplaza el resto del Arbol por una hoja con el valor indicado.
 --Funciona para Arboles infinitos.
---truncar::a->Integer->Arbol23 a b->Arbol23 a b
-
+truncar::a->Integer->Arbol23 a b->Arbol23 a b
+truncar h j a23  = foldA23 (\x k -> case k of {(0)->  (Hoja h) ; otherwise -> (Hoja x) }) 
+					( \x m l k -> case k of { (0)-> (Hoja h); (1)->(Dos x (Hoja h) (Hoja h));
+						otherwise->Dos x (m (k-1)) (l (k-1)) })
+					( \v w n m l k -> case k of { (0)-> (Hoja h); 
+						(1)-> (Tres v w (Hoja h) (Hoja h) (Hoja h));
+						otherwise->Tres v w (n (k-1)) (m (k-1)) (l (k-1)) }) 
+					a23 j
 --Evalúa las funciones tomando los valores de los hijos como argumentos.
 --En el caso de que haya 3 hijos, asocia a izquierda.
---evaluar::Arbol23 a (a->a->a)->a
+evaluar::Arbol23 a (a->a->a)->a
+evaluar a23 = foldA23 id (\f a b ->  f a b) (\f g a b c -> g (f a b) c) a23 
 
-{- Arboles de ejemplo. -}
-arbolito1::Arbol23 Char Int
-arbolito1 = Tres 0 1
-	      (Dos 2 (Hoja 'a') (Hoja 'b'))
-	      (Tres 3 4 (Hoja 'c') (Hoja 'd') (Dos 5 (Hoja 'e') (Hoja 'f')))
-	      (Dos 6 (Hoja 'g') (Dos 7 (Hoja 'h') (Hoja 'i')))
 
-arbolito2::Arbol23 Int Bool
-arbolito2 = Dos True (Hoja (-1)) (Tres False True (Hoja 0) (Hoja (-2)) (Hoja 4))
 
-arbolito3::Arbol23 Int (Int->Int->Int)
-arbolito3 = Dos (+) (Tres (*) (-) (Hoja 1) (Hoja 2) (Hoja 3)) (incrementarHojas arbolito3)
+
+-- Arboles de ejemplo. --
+-- arbolito1::Arbol23 Char Int
+-- arbolito1 = Tres 0 1
+	      --(Dos 2 (Hoja 'a') (Hoja 'b'))
+	      -- (Tres 3 4 (Hoja 'c') (Hoja 'd') (Dos 5 (Hoja 'e') (Hoja 'f')))
+	       --(Dos 6 (Hoja 'g') (Dos 7 (Hoja 'h') (Hoja 'i')))
+-- 
+-- arbolito2::Arbol23 Int Bool
+-- arbolito2 = Dos True (Hoja (-1)) (Tres False True (Hoja 0) (Hoja (-2)) (Hoja 4))
+-- 
+-- arbolito3::Arbol23 Int (Int->Int->Int)
+-- arbolito3 = Dos (+) (Tres (*) (-) (Hoja 1) (Hoja 2) (Hoja 3)) (incrementarHojas arbolito3)
 
 --Ejemplos:
 --internos arbolito1 = [0,1,2,3,4,5,6,7]

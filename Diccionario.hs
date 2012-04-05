@@ -1,15 +1,16 @@
-module Diccionario (Diccionario, vacío, definir, definirVarias, obtener, claves) where
-
+module Diccionario (Diccionario, vacio) where
+-- , definir, definirVarias, obtener, claves
 import Maybe
 import List
 import Arbol23
 
 {- Definiciones de tipos. -}
 
-type Comp clave = clave->clave->Bool
+type Comp clave = clave->clave->Bool 
 type Estr clave valor = Arbol23 (clave,valor) clave
 
 data Diccionario clave valor = Dicc {cmp :: Comp clave, estructura :: Maybe (Estr clave valor)}
+
 --El comparador es por menor.
 
 {- Funciones provistas por la cAtedra. -}
@@ -72,22 +73,43 @@ definirVarias = (flip.foldr.uncurry) definir
 
 {- Funciones a implementar. -}
 
---vacío::Comp clave->Diccionario clave valor
 
---definir::clave->valor->Diccionario clave valor->Diccionario clave valor
 
---obtener::Eq clave=>clave->Diccionario clave valor->Maybe valor
+vacio::Comp clave->Diccionario clave valor
+vacio f  = Dicc f Nothing
 
---claves::Diccionario clave valor->[clave]
 
+
+definir::clave->valor->Diccionario clave valor->Diccionario clave valor
+definir c v d = definir1 c v (cmp d) (estructura d)
+
+definir1::clave->valor->Comp clave->Maybe (Estr clave valor)->Diccionario clave valor
+definir1 c v f (Nothing) = Dicc f (Just (Dos c (Hoja (?,v)) (Hoja (c,v)) ))
+definir1 c v f (Just a23) = Dicc f (Just (insertar c v f a23))
+
+obtener::Eq clave=>clave->Diccionario clave valor->Maybe valor
+obtener c d = obtener2 c (cmp d) (estructura d)
+
+obtener2::Eq clave=>clave->Comp clave->Maybe (Estr clave valor)->Maybe valor
+obtener2 c f Nothing = Nothing
+obtener2 c f (Just a23) = foldA23 (\p->if fst p == c then Just (snd p) else Nothing)
+							(\x y z->if f c x then y else z)
+							(\v w x y z->if f c v then x else (if f c w then y else z)) a23
+
+claves::Diccionario clave valor->[clave]
+claves d = claves1 (estructura d)
+
+claves1::Maybe (Estr clave valor)->[clave]
+claves1 Nothing = []
+claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
 {- Diccionarios de prueba: -}
 
 dicc1::Diccionario Int String
-dicc1 = definirVarias [(0,"Hola"),(-10,"Chau"),(15,"Felicidades"),(2,"etc."),(9,"a")] (vacío (<))
+dicc1 = definirVarias [(0,"Hola"),(-10,"Chau"),(15,"Felicidades"),(2,"etc."),(9,"a")] (vacio (<))
 
-dicc2::Diccionario String String
-dicc2 = definirVarias [("inicio","casa"),("auto","flores"),("calle","auto"),("casa","escalera"),("ropero","alfajor"),("escalera","ropero")] (vacío (<))
+dicc2::Diccionario String String 
+dicc2 = definirVarias [("inicio","casa"),("auto","flores"),("calle","auto"),("casa","escalera"),("ropero","alfajor"),("escalera","ropero")] (vacio (<))
 
 dicc3::Diccionario Int String
-dicc3 = definirVarias [(0,"Hola"),(-10,"Chau"),(15,"Felicidades"),(2,"etc."),(9,"a")] (vacío (\x y->x `mod` 5 < y `mod` 5))
+dicc3 = definirVarias [(0,"Hola"),(-10,"Chau"),(15,"Felicidades"),(2,"etc."),(9,"a")] (vacio (\x y->x `mod` 5 < y `mod` 5))
 
