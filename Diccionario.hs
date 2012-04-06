@@ -1,5 +1,5 @@
-module Diccionario (Diccionario, vacio) where
--- , definir, definirVarias, obtener, claves
+module Diccionario (Diccionario, vacio, definir, definirVarias, obtener, claves) where
+
 import Maybe
 import List
 import Arbol23
@@ -84,7 +84,7 @@ definir::clave->valor->Diccionario clave valor->Diccionario clave valor
 definir c v d = definir1 c v (cmp d) (estructura d)
 
 definir1::clave->valor->Comp clave->Maybe (Estr clave valor)->Diccionario clave valor
-definir1 c v f (Nothing) = Dicc f (Just (Dos c (Hoja (?,v)) (Hoja (c,v)) ))
+definir1 c v f Nothing = Dicc f (Just (Hoja (c,v)))
 definir1 c v f (Just a23) = Dicc f (Just (insertar c v f a23))
 
 obtener::Eq clave=>clave->Diccionario clave valor->Maybe valor
