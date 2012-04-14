@@ -82,16 +82,6 @@ testDic11  = obtener "aaaa" dicc5 == Just "aaaaa"
 testDic12:: Bool
 testDic12  = obtener "inicio" diccV == Just "casa" 
 
---Pruebas para Claves
-testDic13:: Bool
-testDic13  = claves diccV == ["inicio"]
-
-testDic14:: Bool
-testDic14  = claves dicc1 == [-10,0,2,9,15]
-
-testDic15:: Bool
-testDic15  = claves dicc3 == [15,-10,0,2,9]
-
 
 
 dicc3::Diccionario Int String

@@ -120,8 +120,9 @@ claves d = (claves1 (estructura d))
 --los casos recursivos
 claves1::Maybe (Estr clave valor)->[clave]
 claves1 Nothing = []
-claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
---claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
+claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
+--claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
+
 {- Diccionarios de prueba: -}
 --Las pruebas del diccioanrio estan en el archivo Main.hs
 
