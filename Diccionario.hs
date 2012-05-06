@@ -83,15 +83,16 @@ vacio f  = Dicc f Nothing
 --baja un nivel de abstraccion en la estructura interna del diccionario trabajando
 --sobre Maybe Estr
 definir::clave->valor->Diccionario clave valor->Diccionario clave valor
-definir c v d = definir1 c v (cmp d) (estructura d)
-
+definir c v (Dicc cmp estr) = case estr of
+	Nothing -> Dicc cmp (Just (Hoja (c,v)))
+	Just a23 -> Dicc cmp (Just (insertar c v cmp a23))
 
 --cuando definimos en un diccionario vacio El arbol debe tener una hoja sola, 
 --caso contrario debemos insertar la clave usando la funcion de la catedra que hace las rotaciones.
 
-definir1::clave->valor->Comp clave->Maybe (Estr clave valor)->Diccionario clave valor
-definir1 c v f Nothing = Dicc f (Just (Hoja (c,v)))
-definir1 c v f (Just a23) = Dicc f (Just (insertar c v f a23))
+--definir1::clave->valor->Comp clave->Maybe (Estr clave valor)->Diccionario clave valor
+--definir1 c v f Nothing = Dicc f (Just (Hoja (c,v)))
+--definir1 c v f (Just a23) = Dicc f (Just (insertar c v f a23))
 
 --De manera análoga a definir esta funcion usa obtener1 que trabaja sobre 
 --un nivel de abstraccion mas bajo y luego la llama con los proyectores adecuados, del 
