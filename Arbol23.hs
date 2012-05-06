@@ -31,12 +31,10 @@ foldA23 h d t a = case a of
 	Tres v w x y z -> t v w  (rec x) (rec y) (rec z)
 	where rec = foldA23 h d t
 
+
 --Lista en preorden de los internos del Arbol.
--- Como esta en preorden debemos tener cuidado en como concatenamos en los constructores 
--- con subarboles: Hacemos pattern matching con el constructor de lista y usamos el operador "++", los casos
---recursivos al final.
 internos::Arbol23 a b->[b]
-internos a23 = foldA23 (\_->[]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
+internos a23 = foldA23 (\_->[]) (\x y z->x:y++z) (\v w x y z->v:w:x++y++z) a23
 
 
 --Lista las hojas de izquierda a derecha.
