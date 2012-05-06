@@ -98,7 +98,12 @@ definir c v (Dicc cmp estr) = case estr of
 --un nivel de abstraccion mas bajo y luego la llama con los proyectores adecuados, del 
 --diccionario pasado como parámetro.
 obtener::Eq clave=>clave->Diccionario clave valor->Maybe valor
-obtener c d = obtener2 c (cmp d) (estructura d)
+obtener c (Dicc cmp estr) = case estr of
+	Nothing -> Nothing
+	Just a23 -> foldA23 (\p->if fst p == c then Just (snd p) else Nothing)
+							(\x y z->if cmp c x then y else z)
+							(\v w x y z->if cmp c v then x else (if cmp c w then y else z)) a23
+
 
 --Como la estructura interna del diccionario es un arbol23 usamos la funcion de plegado de 
 --arboles23 que hicimos antes y vamos comparando clave y significado.
@@ -106,11 +111,11 @@ obtener c d = obtener2 c (cmp d) (estructura d)
 -- En los casos recursivos usamos la función de comparación y continuamos buscando subarboles derechos, izq o medio
 --asumiendo que el arbold23 tiene un invariante de representación invArbol23 => avl=> abb, 
 --esto nos permite hacer la bósqueda en orden logarótmico.
-obtener2::Eq clave=>clave->Comp clave->Maybe (Estr clave valor)->Maybe valor
-obtener2 c f Nothing = Nothing
-obtener2 c f (Just a23) = foldA23 (\p->if fst p == c then Just (snd p) else Nothing)
-							(\x y z->if f c x then y else z)
-							(\v w x y z->if f c v then x else (if f c w then y else z)) a23
+--obtener2::Eq clave=>clave->Comp clave->Maybe (Estr clave valor)->Maybe valor
+--obtener2 c f Nothing = Nothing
+--obtener2 c f (Just a23) = foldA23 (\p->if fst p == c then Just (snd p) else Nothing)
+--							(\x y z->if f c x then y else z)
+--							(\v w x y z->if f c v then x else (if f c w then y else z)) a23
 
 
 claves:: Diccionario clave valor->[clave]
