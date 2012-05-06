@@ -50,9 +50,9 @@ esHoja::Arbol23 a b->Bool
 esHoja a23 = case a23 of {Hoja x->True; otherwise->False}
 
 ---Como solo las hojas son de tipo "a", aplicaremos la función del primer parametro del map 
---a las mismas el resto usaremos la función de segundo parametro del map. 
+--a las mismas; Para el resto usaremos la función de segundo parametro del map. 
 mapA23::(a->c)->(b->d)->Arbol23 a b->Arbol23 c d
-mapA23 f g a23 = foldA23 (\x -> Hoja (f x)) (\x y z -> Dos (g x) y z) (\v w x y z->Tres (g v) (g w) x y z) a23
+mapA23 f g = foldA23 (\x -> Hoja (f x)) (\x y z -> Dos (g x) y z) (\v w x y z->Tres (g v) (g w) x y z)
 
 --Ejemplo de uso de mapA23.
 --Incrementa en 1 el valor de las hojas.
