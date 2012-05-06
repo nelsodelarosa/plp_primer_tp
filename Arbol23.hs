@@ -47,7 +47,7 @@ hojas a23 = foldA23 (\x->[x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
 
 --Esta funcion nos dice si un árbol es hoja, en caso de construirse solo con "Hoja a" lo es, caso contrario no.
 esHoja::Arbol23 a b->Bool
-esHoja a23 = foldA23 (\_->True) (\_ _ _ -> False) (\_ _ _ _ _-> False) a23
+esHoja a23 = case a23 of {Hoja x->True; otherwise->False}
 
 ---Como solo las hojas son de tipo "a", aplicaremos la función del primer parametro del map 
 --a las mismas el resto usaremos la función de segundo parametro del map. 
