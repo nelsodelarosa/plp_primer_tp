@@ -119,14 +119,16 @@ obtener c (Dicc cmp estr) = case estr of
 
 
 claves:: Diccionario clave valor->[clave]
-claves d = (claves1 (estructura d))
+claves (Dicc cmp estr) = case estr of
+	Nothing -> []
+	Just a23 -> foldA23 (\x->[fst x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
 
 --Utilizamos la tecnica de antes y bajamos un nivel de abdtracción
 --para trabajar sobre el árbol. En caso de una hoja tomo la primer componente, caso contrario concateno
 --los casos recursivos
-claves1::Maybe (Estr clave valor)->[clave]
-claves1 Nothing = []
-claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
+--claves1::Maybe (Estr clave valor)->[clave]
+--claves1 Nothing = []
+--claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
 --claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
 
 {- Diccionarios de prueba: -}
