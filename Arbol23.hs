@@ -72,10 +72,10 @@ truncar h j a23  = foldA23 (\x k ->case k of {0-> Hoja h; otherwise -> Hoja x})
 --En el caso de que haya 3 hijos, asocia a izquierda.
 
 -- En el caso que es hoja el tipo (a->a->a) no tiene sentido entonces devolvemos el mismo valor usando id.
--- para el resto de los constructores aplicamos las funciones que en realidad son los los nodos internos.
---Debemos tener cuidada de asociar de izq a derecha en el caso que el arbo lsea de "tipo 3"
+-- para el resto de los constructores aplicamos las funciones que en realidad son los nodos internos.
+--Debemos tener cuidado de asociar de izq a derecha en el caso que el arbol sea de "tipo 3"
 evaluar::Arbol23 a (a->a->a)->a
-evaluar a23 = foldA23 id (\f a b ->  f a b) (\f g a b c -> g (f a b) c) a23 
+evaluar = foldA23 id id (\f g a b c -> g (f a b) c)
 
 
 -- Arboles de ejemplo. --
