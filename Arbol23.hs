@@ -25,9 +25,11 @@ pad i = replicate i ' '
 --Notese que solo en este caso usamos recursion explicita(porque se nos permite y 
 --por que no podria hacerse de otra manera).
 foldA23::(a->c)->(b->c->c->c)->(b->b->c->c->c->c)->Arbol23 a b->c
-foldA23 h d t (Hoja x) = h x
-foldA23 h d t (Dos x y z) = d x (foldA23 h d t y) (foldA23 h d t z)
-foldA23 h d t (Tres v w x y z) = t v w  (foldA23 h d t x) (foldA23 h d t y) (foldA23 h d t z)
+foldA23 h d t a = case a of
+	Hoja x -> h x
+	Dos x y z -> d x (rec y) (rec z)
+	Tres v w x y z -> t v w  (rec x) (rec y) (rec z)
+	where rec = foldA23 h d t
 
 --Lista en preorden de los internos del Arbol.
 -- Como esta en preorden debemos tener cuidado en como concatenamos en los constructores 
