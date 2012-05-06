@@ -1,11 +1,6 @@
 import Diccionario
 import Maybe
 
-
-
-
-
-
 --Este módulo sirve para utilizar el diccionario sin acceder a su estructura interna. Pueden agregar otras funciones o casos de prueba.
 
 {- Función a implementar. -}
