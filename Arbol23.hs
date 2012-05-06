@@ -21,9 +21,10 @@ pad i = replicate i ' '
 
 --función de plegado de arboles23 un parámetro de tipo función por cada
 --constructor del tipo abstracto de datos, además de un arbol 
--- los pasos recursivos del plegado se aplican a los "subarboles" arboles de constructor(en caso de haberlos).
---Notese que solo en este caso usamos recursion explicita(porque se nos permite y 
---por que no podria hacerse de otra manera).
+-- los pasos recursivos del plegado se aplican a los "subarboles" 
+--arboles de constructor(en caso de haberlos).
+--Notese que solo en este caso usamos recursion explicita(porque se 
+--nos permite y por que no podria hacerse de otra manera).
 foldA23::(a->c)->(b->c->c->c)->(b->b->c->c->c->c)->Arbol23 a b->c
 foldA23 h d t a = case a of
 	Hoja x -> h x
@@ -38,19 +39,24 @@ internos a23 = foldA23 (\_->[]) (\x y z->x:y++z) (\v w x y z->v:w:x++y++z) a23
 
 
 --Lista las hojas de izquierda a derecha.
---Solo nos interesa el caso de constructor "Hoja a" entonces, allí es donde prestaremos atenciín, el resto
---simplemente concatenamos los casos recursivos bajo la hipotesis que la funcion de plegado se encarga 
+--Solo nos interesa el caso de constructor "Hoja a" entonces, 
+--allí es donde prestaremos atencion, el resto
+--simplemente concatenamos los casos recursivos bajo 
+--la hipotesis que la funcion de plegado se encarga 
 --apropiadamente de aplicar las funciones.
 
 hojas::Arbol23 a b->[a]
 hojas a23 = foldA23 (\x->[x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
 
---Esta funcion nos dice si un árbol es hoja, en caso de construirse solo con "Hoja a" lo es, caso contrario no.
+--Esta funcion nos dice si un árbol es hoja, 
+--en caso de construirse solo con "Hoja a" lo es, caso contrario no.
 esHoja::Arbol23 a b->Bool
 esHoja a23 = case a23 of {Hoja x->True; otherwise->False}
 
----Como solo las hojas son de tipo "a", aplicaremos la función del primer parametro del map 
---a las mismas; Para el resto usaremos la función de segundo parametro del map. 
+---Como solo las hojas son de tipo "a", aplicaremos la función del 
+--primer parametro del map 
+--a las mismas; Para el resto usaremos la función de segundo parametro 
+--del map. 
 mapA23::(a->c)->(b->d)->Arbol23 a b->Arbol23 c d
 mapA23 f g = foldA23 (\x -> Hoja (f x)) (\x y z -> Dos (g x) y z) (\v w x y z->Tres (g v) (g w) x y z)
 
@@ -59,9 +65,12 @@ mapA23 f g = foldA23 (\x -> Hoja (f x)) (\x y z -> Dos (g x) y z) (\v w x y z->T
 incrementarHojas::Num a =>Arbol23 a b->Arbol23 a b
 incrementarHojas = mapA23 (+1) id
 
---Trunca el Arbol hasta un determinado nivel. Cuando llega a 0, reemplaza el resto del Arbol por una hoja con el valor indicado.
+--Trunca el Arbol hasta un determinado nivel. 
+--Cuando llega a 0, reemplaza el resto del Arbol por una 
+--hoja con el valor indicado.
 --Funciona para Arboles infinitos.
---En el esquema de la función de plegado el tipo "b" seria Arbol23->Int ( entonces le podemos pasar el nivel).
+--En el esquema de la función de plegado el tipo "b" seria 
+--Arbol23->Int ( entonces le podemos pasar el nivel).
 
 truncar::a->Integer->Arbol23 a b->Arbol23 a b
 truncar h j a23  = foldA23 (\x k ->case k of {0-> Hoja h; otherwise -> Hoja x}) 
@@ -71,9 +80,12 @@ truncar h j a23  = foldA23 (\x k ->case k of {0-> Hoja h; otherwise -> Hoja x})
 --Evalúa las funciones tomando los valores de los hijos como argumentos.
 --En el caso de que haya 3 hijos, asocia a izquierda.
 
--- En el caso que es hoja el tipo (a->a->a) no tiene sentido entonces devolvemos el mismo valor usando id.
--- para el resto de los constructores aplicamos las funciones que en realidad son los nodos internos.
---Debemos tener cuidado de asociar de izq a derecha en el caso que el arbol sea de "tipo 3"
+--En el caso que es hoja el tipo (a->a->a) no 
+--tiene sentido entonces devolvemos el mismo valor usando id.
+-- para el resto de los constructores aplicamos las funciones 
+--que en realidad son los nodos internos.
+--Debemos tener cuidado de asociar de izq a derecha 
+--en el caso que el arbol sea de "tipo 3"
 evaluar::Arbol23 a (a->a->a)->a
 evaluar = foldA23 id id (\f g a b c -> g (f a b) c)
 

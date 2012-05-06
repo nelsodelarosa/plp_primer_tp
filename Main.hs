@@ -1,11 +1,8 @@
 import Diccionario
 import Maybe
-import Random
 
-import System.Random
-import Control.Monad
-import System.Environment
- 
+
+
 
 
 

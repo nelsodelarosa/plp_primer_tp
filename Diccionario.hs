@@ -79,24 +79,20 @@ vacio::Comp clave->Diccionario clave valor
 vacio f  = Dicc f Nothing
 
 
---Define una clave y un valor o signficado, utiliza la función definir1
---baja un nivel de abstraccion en la estructura interna del diccionario trabajando
---sobre Maybe Estr
 definir::clave->valor->Diccionario clave valor->Diccionario clave valor
 definir c v (Dicc cmp estr) = case estr of
 	Nothing -> Dicc cmp (Just (Hoja (c,v)))
 	Just a23 -> Dicc cmp (Just (insertar c v cmp a23))
 
---cuando definimos en un diccionario vacio El arbol debe tener una hoja sola, 
---caso contrario debemos insertar la clave usando la funcion de la catedra que hace las rotaciones.
 
---definir1::clave->valor->Comp clave->Maybe (Estr clave valor)->Diccionario clave valor
---definir1 c v f Nothing = Dicc f (Just (Hoja (c,v)))
---definir1 c v f (Just a23) = Dicc f (Just (insertar c v f a23))
+--Dada una clave y un diccionario, devuelve su valor en caso
+-- de estar y  Nothing en caso contrario.   
+-- Recorro hasta la hoja correspondiente aprovechando   --
+--el invariante del arbol23.Al ser balanceado,
+--cada vez que decido que camino tomar descarto 
+--una cantidad de nodos que me permite realizar la busqueda
+--en orden logaritmico.
 
---De manera análoga a definir esta funcion usa obtener1 que trabaja sobre 
---un nivel de abstraccion mas bajo y luego la llama con los proyectores adecuados, del 
---diccionario pasado como parámetro.
 obtener::Eq clave=>clave->Diccionario clave valor->Maybe valor
 obtener c (Dicc cmp estr) = case estr of
 	Nothing -> Nothing
@@ -105,34 +101,17 @@ obtener c (Dicc cmp estr) = case estr of
 							(\v w x y z->if cmp c v then x else (if cmp c w then y else z)) a23
 
 
---Como la estructura interna del diccionario es un arbol23 usamos la funcion de plegado de 
---arboles23 que hicimos antes y vamos comparando clave y significado.
---En caso de ser hoja comparamos si la clave coincide, si es asi devolvemos el valor sino Nothing
--- En los casos recursivos usamos la función de comparación y continuamos buscando subarboles derechos, izq o medio
---asumiendo que el arbold23 tiene un invariante de representación invArbol23 => avl=> abb, 
---esto nos permite hacer la bósqueda en orden logarótmico.
---obtener2::Eq clave=>clave->Comp clave->Maybe (Estr clave valor)->Maybe valor
---obtener2 c f Nothing = Nothing
---obtener2 c f (Just a23) = foldA23 (\p->if fst p == c then Just (snd p) else Nothing)
---							(\x y z->if f c x then y else z)
---							(\v w x y z->if f c v then x else (if f c w then y else z)) a23
-
-
+--Como solo las hojas tiene claves y los nodos internos
+--solo sirven como indice en la busqueda, nos fijamos en 
+-- hojas.
 claves:: Diccionario clave valor->[clave]
 claves (Dicc cmp estr) = case estr of
 	Nothing -> []
 	Just a23 -> foldA23 (\x->[fst x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
 
---Utilizamos la tecnica de antes y bajamos un nivel de abdtracción
---para trabajar sobre el árbol. En caso de una hoja tomo la primer componente, caso contrario concateno
---los casos recursivos
---claves1::Maybe (Estr clave valor)->[clave]
---claves1 Nothing = []
---claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->[x]++y++z) (\v w x y z->[v]++[w]++x++y++z) a23
---claves1 (Just a23) = foldA23 (\x->[fst x]) (\x y z->y++z) (\v w x y z->x++y++z) a23
 
 {- Diccionarios de prueba: -}
---Las pruebas del diccioanrio estan en el archivo Main.hs
+--Las pruebas del diccionario estan en el archivo Main.hs
 
 
 dicc1::Diccionario Int String
