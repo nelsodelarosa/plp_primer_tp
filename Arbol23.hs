@@ -64,12 +64,9 @@ incrementarHojas = mapA23 (+1) id
 --En el esquema de la función de plegado el tipo "b" seria Arbol23->Int ( entonces le podemos pasar el nivel).
 
 truncar::a->Integer->Arbol23 a b->Arbol23 a b
-truncar h j a23  = foldA23 (\x k -> case k of {(0)->  (Hoja h) ; otherwise -> (Hoja x) }) 
-					( \x m l k -> case k of { (0)-> (Hoja h); (1)->(Dos x (Hoja h) (Hoja h));
-						otherwise->Dos x (m (k-1)) (l (k-1)) })
-					( \v w n m l k -> case k of { (0)-> (Hoja h); 
-						(1)-> (Tres v w (Hoja h) (Hoja h) (Hoja h));
-						otherwise->Tres v w (n (k-1)) (m (k-1)) (l (k-1)) }) 
+truncar h j a23  = foldA23 (\x k ->case k of {0-> Hoja h; otherwise -> Hoja x}) 
+					( \x m l k ->case k of {0-> Hoja h; otherwise-> Dos x (m (k-1)) (l (k-1))})
+					( \v w n m l k ->case k of {0-> Hoja h; otherwise-> Tres v w (n (k-1)) (m (k-1)) (l (k-1))}) 
 					a23 j
 --Evalúa las funciones tomando los valores de los hijos como argumentos.
 --En el caso de que haya 3 hijos, asocia a izquierda.
